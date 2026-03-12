@@ -3,7 +3,31 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <cstring>
 
+void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &fds, size_t &index)
+{
+    char buffer[1024];
+    std::memset(buffer, 0, sizeof(buffer));
+
+    // 1. Receive data
+    int bytes_read = recv(fd, buffer, sizeof(buffer) - 1, 0);
+
+    if (bytes_read <= 0) 
+    {
+        // Handle Disconnection
+        std::cout << "Client " << fd << " disconnected." << std::endl;
+        close(fd);
+        userManager.removeUser(fd);
+        fds.erase(fds.begin() + index);
+        index--; // Adjust index because the vector size changed
+    } 
+    else 
+    {
+        // 2. Pass to User class for buffer management and command parsing
+        userManager.handleClientData(fd, std::string(buffer));
+    }
+}
 void startServerLoop(Server &irc)
 {
     User userManager;
@@ -27,22 +51,7 @@ void startServerLoop(Server &irc)
                 }
                 else
                 {
-                    char buf[1024] = {0};
-                    int bytes = recv(fds[i].fd, buf, sizeof(buf) - 1, 0);
-                    
-                    if (bytes <= 0)
-                    {
-                        int fd = fds[i].fd;
-                        close(fd);
-                        userManager.removeUser(fd);
-                        fds.erase(fds.begin() + i);
-                        i--;
-                    }
-                    else
-                    {
-                        // Direct access to User class logic
-                        userManager.handleClientData(fds[i].fd, std::string(buf));
-                    }
+                    handleClientPollIn(fds[i].fd, userManager, fds, i);
                 }
             }
             // Handle POLLOUT and other events as needed
