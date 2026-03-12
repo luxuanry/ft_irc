@@ -13,9 +13,15 @@ Server::Server(int port, std::string pass)
 
 Server::~Server()
 {
-    close(m_socket);
+    //close(m_socket);
+	for (size_t i = 0; i < v_fds.size(); ++i)
+        close(v_fds[i].fd);
     std::cout << "Server closed" << std::endl;
 }
+
+int& Server::getSocket() { return m_socket; }
+std::vector<struct pollfd>& Server::getFds() { return v_fds; }
+std::string Server::getPass() const { return _pass; }
 
 void	Server::_initSocket(int port)
 {
@@ -69,7 +75,7 @@ void Server::_acceptClient()
     // Add to poll watch list
     struct pollfd pfd;
     pfd.fd = client_fd;
-    pfd.events = POLLIN;
+    pfd.events = POLLIN | POLLOUT;
     pfd.revents = 0;
     v_fds.push_back(pfd);
 
