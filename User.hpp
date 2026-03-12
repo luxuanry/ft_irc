@@ -6,7 +6,7 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:13:46 by suna              #+#    #+#             */
-/*   Updated: 2026/03/12 15:06:30 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/12 16:13:25 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ class User
         std::map<std::string, int> m_User_string;
         void    initUserInfo(struct userInfo &info);
     public:
-        void    addUserListInt(int fd);
+        void    addUserMapInt(int fd);
+        void    setHostName(int fd, std::string HostName);
         void    removeUser(int fd);
         struct userInfo& getUserInfo(int fd);
         User();
         ~User();
 };
-
 

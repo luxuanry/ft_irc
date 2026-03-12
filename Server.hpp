@@ -4,6 +4,7 @@
 # include <string>
 # include <vector>
 # include <poll.h>
+# include "User.hpp"
 
 class Server
 {
@@ -12,13 +13,21 @@ private:
 	std::string 				_pass;
 	std::vector<struct pollfd> 	v_fds;
 
+
 public:
 	Server(int port,std::string pass);
 	~Server();
 
+	// Getters
+	int&						getSocket();
+	std::string					getPass() const;
+	std::vector<struct pollfd>&	getFds();
+
+	std::pair<int, std::string>	_acceptClient();
+
 private:
 	void	_initSocket(int port);
-	void	_acceptClient();
+	
 };
 
 #endif
