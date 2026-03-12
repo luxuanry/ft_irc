@@ -13,6 +13,15 @@
 #include "User.hpp"
 #include <utility>
 
+User::User()
+{
+
+}
+
+User::~User()
+{
+
+}
 
 void User::initUserInfo(struct userInfo &info)
 {
@@ -39,20 +48,34 @@ void User::setHostName(int fd ,std::string HostName)
 
 void User::removeUser(int fd)
 {
-    m_User_int.erase(fd);
+	m_User_int.erase(fd);
 }
-struct userInfo& User::getUserInfo(int fd)
+
+void User::handleClientData(int fd, std::string rawInput)
 {
-    return m_User_int[fd];
-}
+    // 1. storing the input data to readbuffer
+    m_User_int[fd].readBuffer += rawInput;
 
-User::User()
+    // 2. if end of buffer is \n?
+    size_t pos;
+    while ((pos = m_User_int[fd].readBuffer.find('\n')) != std::string::npos)
+    {
+        // 3. split the command which ends in \n (or \r\n)
+        std::string command = m_User_int[fd].readBuffer.substr(0, pos);
+        
+        // Clean up \r if it exists
+        if (!command.empty() && command[command.size() - 1] == '\r')
+            command.erase(command.size() - 1);
+
+        // 4. distinct the command with the first word
+        if (!command.empty())
+            executeCommand(fd, command);
+
+        // Remove processed command from buffer
+        m_User_int[fd].readBuffer.erase(0, pos + 1);
+    }
+}
+void User::executeCommand(int fd, std::string cmd)
 {
-
+	// execute commands
 }
-
-User::~User()
-{
-
-}
-
