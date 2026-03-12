@@ -6,13 +6,14 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:13:46 by suna              #+#    #+#             */
-/*   Updated: 2026/03/12 13:12:58 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/12 16:13:25 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 struct userInfo
 {
@@ -23,7 +24,7 @@ struct userInfo
     std::string readBuffer;
     std::string password;
     int         status;
-    std::vector<std::string> channelList;
+    std::set<std::string> channelList;
 };
 
 class User
@@ -35,11 +36,12 @@ class User
 		void	executeCommand(int fd, std::string cmd);
 		
     public:
-        void    addUserListInt(int fd);
-		void	removeUser(int fd);
-		void	handleClientData(int fd, std::string rawInput);
+		    void	  handleClientData(int fd, std::string rawInput);
+        void    addUserMapInt(int fd);
+        void    setHostName(int fd, std::string HostName);
+        void    removeUser(int fd);
+        struct userInfo& getUserInfo(int fd);
         User();
         ~User();
 };
-
 

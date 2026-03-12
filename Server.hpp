@@ -23,7 +23,7 @@ public:
 	std::string					getPass() const;
 	std::vector<struct pollfd>&	getFds();
 
-	void	_acceptClient();
+	std::pair<int, std::string>	_acceptClient();
 
 private:
 	void	_initSocket(int port);

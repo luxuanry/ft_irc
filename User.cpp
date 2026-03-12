@@ -6,7 +6,7 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/12 13:12:12 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/12 16:13:54 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,16 @@ void User::initUserInfo(struct userInfo &info)
     info.status = 0;
 }
 
-void User::addUserListInt(int fd)
+void User::addUserMapInt(int fd)
 {
     userInfo info;
     initUserInfo(info);
     m_User_int.insert(std::make_pair(fd, info));
+}
+
+void User::setHostName(int fd ,std::string HostName)
+{
+    m_User_int[fd].hostName = HostName;
 }
 
 void User::removeUser(int fd)

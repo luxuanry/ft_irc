@@ -28,6 +28,22 @@ void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &f
         userManager.handleClientData(fd, std::string(buffer));
     }
 }
+
+void serverPollin(Server &irc, User &userManager)
+{
+    try
+    {
+        std::pair<int, std::string> client = irc._acceptClient();
+        userManager.addUserMapInt(client.first);
+        userManager.setHostName(client.first, client.second);
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << '\n';
+    }
+}
+
+
 void startServerLoop(Server &irc)
 {
     User userManager;
@@ -44,11 +60,7 @@ void startServerLoop(Server &irc)
             if (fds[i].revents & POLLIN)
             {
                 if (fds[i].fd == irc.getSocket())
-                {
-                    irc._acceptClient();
-                    // Link the new FD to the user logic
-                    userManager.addUserListInt(fds.back().fd);
-                }
+                    serverPollin(irc, userManager);
                 else
                 {
                     handleClientPollIn(fds[i].fd, userManager, fds, i);
