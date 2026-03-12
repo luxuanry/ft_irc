@@ -59,18 +59,21 @@ void	Server::_initSocket(int port)
 }
 
 
-void Server::_acceptClient()
+std::pair<int, std::string> Server::_acceptClient()
 {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
+    int client_fd;
+    std::string hostName;
 
     // Accept the new connection, get client_fd
-    int client_fd = accept(m_socket, (struct sockaddr*)&clientAddr, &clientLen);
+    client_fd = accept(m_socket, (struct sockaddr*)&clientAddr, &clientLen);
     if (client_fd == -1)
-        return;
+        throw std::runtime_error("Accepting new Client failed");
 
     // Set non-blocking mode
     fcntl(client_fd, F_SETFL, O_NONBLOCK);
+    hostName = inet_ntoa(clientAddr.sin_addr);
 
     // Add to poll watch list
     struct pollfd pfd;
@@ -80,6 +83,8 @@ void Server::_acceptClient()
     v_fds.push_back(pfd);
 
     std::cout << "New client fd=" << client_fd
-              << " from " << inet_ntoa(clientAddr.sin_addr)
+              << " from " << hostName
               << ":" << ntohs(clientAddr.sin_port) << std::endl;
+
+    return (std::make_pair(client_fd, hostName));
 }
