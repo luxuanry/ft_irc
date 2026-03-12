@@ -19,6 +19,10 @@ Server::~Server()
     std::cout << "Server closed" << std::endl;
 }
 
+int& Server::getSocket() { return m_socket; }
+std::vector<struct pollfd>& Server::getFds() { return v_fds; }
+std::string Server::getPass() const { return _pass; }
+
 void	Server::_initSocket(int port)
 {
 	//create socket 

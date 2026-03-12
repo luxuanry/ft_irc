@@ -12,18 +12,22 @@ private:
 	int 						m_socket;
 	std::string 				_pass;
 	std::vector<struct pollfd> 	v_fds;
-	User						_userManager;
 
 
 public:
 	Server(int port,std::string pass);
 	~Server();
 
-	void	run();
+	// Getters
+	int&						getSocket();
+	std::string					getPass() const;
+	std::vector<struct pollfd>&	getFds();
+
+	void	_acceptClient();
 
 private:
 	void	_initSocket(int port);
-	void	_acceptClient();
+	
 };
 
 #endif
