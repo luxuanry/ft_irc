@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 15:50:40 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/16 16:06:00 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,24 +172,7 @@ void User::executeCommand(int fd, std::string cmd)
 		else if (cmds[0] == "NICK")
             nick(*this, cmds, fd);
         else if (cmds[0] == "USER")
-        {   
-            //USER <username> <hostname> <servername> :<realname>
-            if(cmds.size() < 5)
-            {
-                std::string errorMsg = ":server 461 " + cmds[0] + " :Not enough parameters\r\n";
-                m_User_int[fd].writeBuffer += errorMsg;
-                return;
-            }
-            m_User_int[fd].loginName = cmds[1];
-            m_User_int[fd].hostName = cmds[2];
-            if(isLogin(fd))
-            {
-                std::string successMsg = ":server 001 " + m_User_int[fd].nickName + " :Welcome to the IRC server\r\n";
-                m_User_int[fd].writeBuffer += successMsg;
-                std::cout << "User " << m_User_int[fd].nickName << " logged in successfully." << std::endl;
-            }
-        }
-            
+            userCmd(*this, cmds, fd);
     }
         
 }
