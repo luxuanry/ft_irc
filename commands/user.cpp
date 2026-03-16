@@ -12,14 +12,5 @@ void userCmd(User &userObj, std::vector<std::string> cmds, int fd)
         info.writeBuffer += errorMsg; 
         return;
     }
-
     info.loginName = cmds[1];
-    info.hostName = cmds[2];
-
-    if (userObj.isLogin(fd))
-    {
-        std::string successMsg = ":server 001 " + info.nickName + " :Welcome to the IRC server\r\n";
-        info.writeBuffer += successMsg;
-        std::cout << "User " << info.nickName << " logged in successfully." << std::endl;
-    }
 }

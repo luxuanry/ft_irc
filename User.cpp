@@ -6,7 +6,7 @@
 /*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 16:06:00 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/16 16:33:50 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,10 @@ void User::setHostName(int fd ,std::string HostName)
 
 void User::removeUser(int fd)
 {
+    // std::string nick = m_User_int[fd].nickName;
+    // if (!nick.empty()) {
+    //     m_User_string.erase(nick); 
+    // }
 	m_User_int.erase(fd);
 }
 
@@ -156,6 +160,13 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass)
             nick(*this, cmds, fd);
         else if (cmds[0] == "USER")
             userCmd(*this, cmds, fd);
+        if (isLogin(fd)){
+            std::string welcome = ":server 001 " + m_User_int[fd].nickName + " :Welcome to the IRC server!\r\n";
+            m_User_int[fd].writeBuffer += welcome;
+            m_User_int[fd].status = 1; //change the status as connected
+
+            std::cout << "User " << m_User_int[fd].nickName << " logged in successfully." << std::endl;
+        }
     }
         
 }
