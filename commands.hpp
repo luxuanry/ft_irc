@@ -16,6 +16,7 @@
     #include "User.hpp"
     
     void nick(User &user, std::vector<std::string> cmd, int fd);
+    void pass(User &user, std::vector<std::string> cmd, int fd);
     void userCmd(User &userObj, std::vector<std::string> cmds, int fd);
 
 #endif
