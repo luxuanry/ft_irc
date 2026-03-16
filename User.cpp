@@ -6,7 +6,7 @@
 /*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 14:14:05 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/16 15:40:33 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,11 @@ void User::addUserMapInt(int fd)
     m_User_int.insert(std::make_pair(fd, info));
 }
 
+void User::addUserString(int fd, std::string nick)
+{
+    m_User_string.insert(std::make_pair(nick, fd));
+}
+
 void User::setHostName(int fd ,std::string HostName)
 {
     m_User_int[fd].hostName = HostName;
@@ -68,6 +73,26 @@ void User::setHostName(int fd ,std::string HostName)
 void User::removeUser(int fd)
 {
 	m_User_int.erase(fd);
+}
+
+void User::setNickName(int fd, std::string nick)
+{
+    m_User_string.erase(m_User_int[fd].nickName);
+    m_User_int[fd].nickName = nick;
+    addUserString(fd, nick);
+}
+
+void User::setWrtieBuffer(int fd, std::string msg)
+{
+    m_User_int[fd].writeBuffer += msg;
+}
+
+void User::setBroadCastMsg(std::string msg)
+{
+    std::map<int, struct userInfo>::iterator it = m_User_int.begin();
+
+    for ( ; it != m_User_int.end(); it++)
+        setWrtieBuffer(it->first, msg);
 }
 
 void User::handleClientData(int fd, std::string rawInput)
@@ -108,6 +133,13 @@ struct userInfo& User::getUserInfo(int fd)
 	return m_User_int[fd];
 }
 
+bool User::isExist(std::string nickName)
+{
+    return(m_User_string.count(nickName));
+}
+
+
+
 void User::executeCommand(int fd, std::string cmd)
 {
     std::vector<std::string> cmds = split(cmd, " ");
@@ -143,3 +175,21 @@ void User::executeCommand(int fd, std::string cmd)
     }
         
 }
+
+std::string User::getNickName(int fd)
+{
+    return m_User_int[fd].nickName;
+}
+
+std::string User::getHostName(int fd)
+{
+    return m_User_int[fd].hostName;
+}
+
+std::string User::getLoginName(int fd)
+{
+
+    return m_User_int[fd].loginName;
+}
+
+
