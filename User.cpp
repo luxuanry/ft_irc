@@ -150,8 +150,25 @@ void User::executeCommand(int fd, std::string cmd)
     else
     {
         if (cmds[0] == "PASS")
-            ;//pass function
-        else if (cmds[0] == "NICK")
+        {
+			// 1. Check if the user is already registered (status 1 or higher)
+    		if (m_User_int[fd].status >= 1) {
+        		m_User_int[fd].writeBuffer += "462 :Unauthorized command (already registered)\r\n";
+        		return;
+    		}
+
+    		// 2. Check if password was provided
+    		if (cmds.size() < 2) {
+        		m_User_int[fd].writeBuffer += "461 PASS :Not enough parameters\r\n";
+        		return;
+    		}
+
+    		// 3. Store the password for the "All three pass" check
+    		m_User_int[fd].password = cmds[1];
+    
+    		std::cout << "FD " << fd << " set password to: " << cmds[1] << std::endl;
+		}
+		else if (cmds[0] == "NICK")
             ;//nick funtion
         else if (cmds[0] == "USER")
         {   
