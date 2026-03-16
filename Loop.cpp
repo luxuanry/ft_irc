@@ -15,7 +15,7 @@ void sigint(int num)
 
 }
 
-void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &fds, size_t &index)
+void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &fds, size_t &index, std::string serverPass)
 {
     char buffer[1024];
     std::memset(buffer, 0, sizeof(buffer));
@@ -35,7 +35,7 @@ void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &f
     else 
     {
         // 2. Pass to User class for buffer management and command parsing
-        userManager.handleClientData(fd, std::string(buffer));
+        userManager.handleClientData(fd, std::string(buffer), serverPass);
     }
 }
 

@@ -96,7 +96,7 @@ void User::setBroadCastMsg(std::string msg)
         setWrtieBuffer(it->first, msg);
 }
 
-void User::handleClientData(int fd, std::string rawInput)
+void User::handleClientData(int fd, std::string rawInput, std::string serverPass)
 {
     // 1. storing the input data to readbuffer
     m_User_int[fd].readBuffer += rawInput;
@@ -114,7 +114,7 @@ void User::handleClientData(int fd, std::string rawInput)
 
         // 4. distinct the command with the first word
         if (!command.empty())
-            executeCommand(fd, command);
+            executeCommand(fd, command, serverPass);
 
         // Remove processed command from buffer
         m_User_int[fd].readBuffer.erase(0, pos + 1);
@@ -141,7 +141,7 @@ bool User::isExist(std::string nickName)
 
 
 
-void User::executeCommand(int fd, std::string cmd)
+void User::executeCommand(int fd, std::string cmd, std::string serverPass)
 {
     std::vector<std::string> cmds = split(cmd, " ");
     if (isLogin(fd))
@@ -151,9 +151,7 @@ void User::executeCommand(int fd, std::string cmd)
     else
     {
         if (cmds[0] == "PASS")
-        {
-			pass(*this, cmds, fd);
-		}
+			pass(*this, cmds, fd, serverPass);
 		else if (cmds[0] == "NICK")
             nick(*this, cmds, fd);
         else if (cmds[0] == "USER")

@@ -37,10 +37,10 @@ class User
         std::map<int, struct userInfo> m_User_int;
         std::map<std::string, int> m_User_string;
         void    initUserInfo(struct userInfo &info);
-		void	executeCommand(int fd, std::string cmd);
+		void	executeCommand(int fd, std::string cmd, std::string serverPass);
 		
     public:
-		void	handleClientData(int fd, std::string rawInput);
+		void	handleClientData(int fd, std::string rawInput, std::string serverPass);
         void    addUserMapInt(int fd);
         void    addUserString(int fd, std::string nick);
         void    setHostName(int fd, std::string HostName);
