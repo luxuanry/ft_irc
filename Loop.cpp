@@ -4,6 +4,16 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cstring>
+#include <csignal>
+
+bool stop = false;
+
+void sigint(int num)
+{
+    if (num == SIGINT || num == SIGQUIT)
+        stop = true;
+
+}
 
 void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &fds, size_t &index)
 {
@@ -82,8 +92,10 @@ void handleServerPollIn(Server &irc, User &userManager)
 void startServerLoop(Server &irc)
 {
     User userManager;
+    signal(SIGINT, sigint);
+    signal(SIGQUIT, sigint);
     
-    while (true)
+    while (!stop)
     {
         std::vector<struct pollfd> &fds = irc.getFds();
         int poll_ret = poll(&fds[0], fds.size(), -1);
