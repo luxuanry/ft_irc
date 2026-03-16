@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 15:40:33 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/16 15:50:40 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "User.hpp"
 #include <utility>
 #include <iostream>
+#include "commands.hpp"
 
 std::vector<std::string> split(std::string str, std::string std)
 {
@@ -145,7 +146,7 @@ void User::executeCommand(int fd, std::string cmd)
     std::vector<std::string> cmds = split(cmd, " ");
     if (isLogin(fd))
     {
-
+            //rest of the commands
     }
     else
     {
@@ -169,7 +170,7 @@ void User::executeCommand(int fd, std::string cmd)
     		std::cout << "FD " << fd << " set password to: " << cmds[1] << std::endl;
 		}
 		else if (cmds[0] == "NICK")
-            ;//nick funtion
+            nick(*this, cmds, fd);
         else if (cmds[0] == "USER")
         {   
             //USER <username> <hostname> <servername> :<realname>
