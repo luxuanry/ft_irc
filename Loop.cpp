@@ -68,7 +68,7 @@ void handleServerPollIn(Server &irc, User &userManager)
 {
     try
     {
-        std::pair<int, std::string> client = irc._acceptClient();
+        std::pair<int, std::string> client = irc.acceptClient();
         userManager.addUserMapInt(client.first);
         userManager.setHostName(client.first, client.second);
     }

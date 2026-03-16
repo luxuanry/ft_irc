@@ -36,7 +36,7 @@ class User
 		void	executeCommand(int fd, std::string cmd);
 		
     public:
-		    void	  handleClientData(int fd, std::string rawInput);
+		void	handleClientData(int fd, std::string rawInput);
         void    addUserMapInt(int fd);
         void    setHostName(int fd, std::string HostName);
         void    removeUser(int fd);

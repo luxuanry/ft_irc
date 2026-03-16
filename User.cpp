@@ -102,6 +102,11 @@ bool User::isLogin(int fd)
     return true;
 }
 
+struct userInfo& User::getUserInfo(int fd)
+{
+	return m_User_int[fd];
+}
+
 void User::executeCommand(int fd, std::string cmd)
 {
     std::vector<std::string> cmds = split(cmd, " ");
