@@ -6,9 +6,12 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 13:25:47 by suna              #+#    #+#             */
-/*   Updated: 2026/03/12 14:39:41 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/16 13:39:01 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef CHANNEL_HPP
+ #define CHANNEL_HPP
 
 #include <string>
 #include <vector>
@@ -40,3 +43,4 @@ class Channel
         ~Channel();
 };
 
+#endif
