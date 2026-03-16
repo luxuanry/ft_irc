@@ -59,7 +59,7 @@ void	Server::_initSocket(int port)
 }
 
 
-std::pair<int, std::string> Server::_acceptClient()
+std::pair<int, std::string> Server::acceptClient()
 {
     struct sockaddr_in clientAddr;
     socklen_t clientLen = sizeof(clientAddr);

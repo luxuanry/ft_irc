@@ -75,6 +75,12 @@ void User::handleClientData(int fd, std::string rawInput)
         m_User_int[fd].readBuffer.erase(0, pos + 1);
     }
 }
+
+struct userInfo& User::getUserInfo(int fd)
+{
+	return m_User_int[fd];
+}
+
 void User::executeCommand(int fd, std::string cmd)
 {
 	// execute commands
