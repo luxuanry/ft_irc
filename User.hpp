@@ -6,7 +6,7 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:13:46 by suna              #+#    #+#             */
-/*   Updated: 2026/03/12 16:13:25 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/16 13:02:08 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class User
         void    setHostName(int fd, std::string HostName);
         void    removeUser(int fd);
         struct userInfo& getUserInfo(int fd);
+        bool    isLogin(int fd);
         User();
         ~User();
 };

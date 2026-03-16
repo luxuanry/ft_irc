@@ -6,12 +6,30 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/12 16:13:54 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/16 13:24:23 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "User.hpp"
 #include <utility>
+
+std::vector<std::string> split(std::string str, std::string std)
+{
+    std::vector<std::string> rst;
+    int std_len = std.size();
+    size_t cut;
+    while ((cut = str.find(std)) != std::string::npos)
+    {
+        if (str[0] == ';')
+            break;
+        std::string word = str.substr(0, cut);
+        rst.push_back(word);
+        str = str.substr(cut + std_len);
+    }
+    if (str != "")
+        rst.push_back(str);
+    return (rst);
+}
 
 User::User()
 {
@@ -76,6 +94,14 @@ void User::handleClientData(int fd, std::string rawInput)
     }
 }
 
+bool User::isLogin(int fd)
+{
+    if (m_User_int[fd].hostName == "" || m_User_int[fd].loginName == "" || 
+        m_User_int[fd].nickName == "" || m_User_int[fd].password == "")
+        return (false);
+    return true;
+}
+
 struct userInfo& User::getUserInfo(int fd)
 {
 	return m_User_int[fd];
@@ -83,5 +109,20 @@ struct userInfo& User::getUserInfo(int fd)
 
 void User::executeCommand(int fd, std::string cmd)
 {
-	// execute commands
+    std::vector<std::string> cmds = split(cmd, " ");
+    if (isLogin(fd))
+    {
+
+    }
+    else
+    {
+        if (cmds[0] == "PASS")
+            ;//pass function
+        else if (cmds[0] == "NICK")
+            ;//nick funtion
+        else if (cmds[0] == "USER")
+            ;//user function
+            
+    }
+        
 }

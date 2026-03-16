@@ -64,7 +64,7 @@ void handleClientPollOut(Server &irc, User &userManager, size_t &i)
 
 }
 
-void serverPollin(Server &irc, User &userManager)
+void handleServerPollIn(Server &irc, User &userManager)
 {
     try
     {
@@ -95,7 +95,7 @@ void startServerLoop(Server &irc)
             if (fds[i].revents & POLLIN)
             {
                 if (fds[i].fd == irc.getSocket())
-                    serverPollin(irc, userManager);
+                    handleServerPollIn(irc, userManager);
                 else
                 {
                     handleClientPollIn(fds[i].fd, userManager, fds, i);
