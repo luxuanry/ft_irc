@@ -6,7 +6,7 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 13:25:47 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 13:39:01 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/17 00:00:00 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,16 @@ class Channel
         void initChannelInfo(channelInfo &info);
     public:
         void    addChannel(std::string channelName);
+        bool    channelExists(std::string channelName);
+        channelInfo& getChannelInfo(std::string channelName);
+        bool    isUserInChannel(std::string channelName, int fd);
+        bool    isOperator(std::string channelName, int fd);
+        bool    isInvited(std::string channelName, int fd);
+        void    addUserToChannel(std::string channelName, int fd);
+        void    removeUserFromChannel(std::string channelName, int fd);
+        void    addOperator(std::string channelName, int fd);
+        void    addToInviteList(std::string channelName, int fd);
+        std::set<int>& getUsers(std::string channelName);
         Channel();
         ~Channel();
 };
