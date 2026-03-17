@@ -6,7 +6,7 @@
 /*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 16:33:50 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/17 17:41:40 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,10 @@ void User::setHostName(int fd ,std::string HostName)
 
 void User::removeUser(int fd)
 {
-    // std::string nick = m_User_int[fd].nickName;
-    // if (!nick.empty()) {
-    //     m_User_string.erase(nick); 
-    // }
+    std::string nick = m_User_int[fd].nickName;
+    if (!nick.empty()) {
+        m_User_string.erase(nick); 
+    }
 	m_User_int.erase(fd);
 }
 
@@ -203,5 +203,10 @@ std::string User::getLoginName(int fd)
 
     return m_User_int[fd].loginName;
 }
-
+int User::getFdByNick(std::string nickName)
+{
+    if (isExist(nickName))
+        return m_User_string[nickName];
+    return -1;
+}
 

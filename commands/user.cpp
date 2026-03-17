@@ -3,7 +3,6 @@
 
 void userCmd(User &userObj, std::vector<std::string> cmds, int fd)
 {
-    //get
     struct userInfo &info = userObj.getUserInfo(fd);
 
     if (cmds.size() < 5)
