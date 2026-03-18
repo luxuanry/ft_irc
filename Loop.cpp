@@ -45,34 +45,44 @@ void handleClientPollOut(Server &irc, User &userManager, size_t &i)
     std::vector<struct pollfd> &fds = irc.getFds();
     
     int fd = fds[i].fd;
-    std::string &wBuf = userManager.getUserInfo(fd).writeBuffer;
+    struct userInfo &info = userManager.getUserInfo(fd);
+    std::string &wBuf = info.writeBuffer;
 
-    if(wBuf.empty())
-    {
-        fds[i].events &= ~POLLOUT; // Disable POLLOUT if there's nothing to write
-        return;
-    }
-    // Attempt to send data
-    int bytes_sent = send(fd, wBuf.c_str(), wBuf.size(), 0);
-
-    // Check if send was successful
-    if (bytes_sent > 0)
-    {
-        wBuf.erase(0, bytes_sent); // Remove sent data from buffer
-        
-        // If buffer is now empty, disable POLLOUT
-        if (wBuf.empty()) {
-            fds[i].events &= ~POLLOUT;
+    // If there is data to send, send it
+	if (!wBuf.empty())
+	{
+		int byte_sent = send(fd, wBuf.c_str(), wBuf.size(), 0);
+		if (byte_sent > 0)
+		{
+			wBuf.erase(0, byte_sent); // Remove sent data from buffer
+			// If buffer is now empty, disable POLLOUT
+        	if (wBuf.empty()) {
+            	fds[i].events &= ~POLLOUT;
         }
-    }
-    else if(bytes_sent == -1){
-        // Handle send error (e.g., client disconnected)
-        close(fd);
-        userManager.removeUser(fd);
-        fds.erase(fds.begin() + i);
-        i--; // Adjust index after erasing
-    }
+		}
+		else if (byte_sent == -1)
+		{
+			// Handle send error (e.g., client disconnected)
+			std::cout << "Error sending to client " << fd << ". Disconnecting." << std::endl;
+			close(fd);
+			userManager.removeUser(fd);
+			fds.erase(fds.begin() + i);
+			i--; // Adjust index after erasing
+		}
+	}
+    
+	if (wBuf.empty() && info.status == -1)
+	{
+		std::cout << "Closing connection for FD " << fd << " (QUIT processed) " << std::endl;
+		close(fd);
+		userManager.removeUser(fd);
+		fds.erase(fds.begin() + i);
+		i--; // Adjust index after erasing
+		return ;
+	}
 
+	if(wBuf.empty() && info.status != -1)
+        fds[i].events &= ~POLLOUT; // Disable POLLOUT if there's nothing to write
 }
 
 void handleServerPollIn(Server &irc, User &userManager)
@@ -115,7 +125,8 @@ void startServerLoop(Server &irc)
                     handleClientPollIn(fds[i].fd, userManager, channelManager, fds, i, irc.getPass());
                 }
             }
-            if (userManager.getUserInfo(fds[i].fd).writeBuffer != "")
+            if (!userManager.getUserInfo(fds[i].fd).writeBuffer.empty() ||
+						userManager.getUserInfo(fds[i].fd).status == -1)
                 fds[i].events |= POLLOUT;
             // Handle POLLOUT and other events as needed
             if (fds[i].revents & POLLOUT)
