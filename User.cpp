@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "User.hpp"
+#include "Channel.hpp"
 #include <utility>
 #include <iostream>
 #include "commands.hpp"
@@ -100,7 +101,7 @@ void User::setBroadCastMsg(std::string msg)
         setWrtieBuffer(it->first, msg);
 }
 
-void User::handleClientData(int fd, std::string rawInput)
+void User::handleClientData(int fd, std::string rawInput, std::string serverPass, Channel &channel)
 {
     // 1. storing the input data to readbuffer
     m_User_int[fd].readBuffer += rawInput;
@@ -111,14 +112,14 @@ void User::handleClientData(int fd, std::string rawInput)
     {
         // 3. split the command which ends in \n (or \r\n)
         std::string command = m_User_int[fd].readBuffer.substr(0, pos);
-        
+
         // Clean up \r if it exists
         if (!command.empty() && command[command.size() - 1] == '\r')
             command.erase(command.size() - 1);
 
         // 4. distinct the command with the first word
         if (!command.empty())
-            executeCommand(fd, command);
+            executeCommand(fd, command, serverPass, channel);
 
         // Remove processed command from buffer
         m_User_int[fd].readBuffer.erase(0, pos + 1);
@@ -145,34 +146,24 @@ bool User::isExist(std::string nickName)
 
 
 
-void User::executeCommand(int fd, std::string cmd)
+void User::executeCommand(int fd, std::string cmd, std::string serverPass, Channel &channel)
 {
     std::vector<std::string> cmds = split(cmd, " ");
     if (isLogin(fd))
     {
-            //rest of the commands
+        if (cmds[0] == "JOIN")
+            join(*this, channel, cmds, fd);
+        else if (cmds[0] == "INVITE")
+            invite(*this, channel, cmds, fd);
+        else if (cmds[0] == "PRIVMSG")
+            privmsg(*this, channel, cmds, fd);
+        else if (cmds[0] == "NICK")
+            nick(*this, cmds, fd);
     }
     else
     {
         if (cmds[0] == "PASS")
-        {
-			// 1. Check if the user is already registered (status 1 or higher)
-    		if (m_User_int[fd].status >= 1) {
-        		m_User_int[fd].writeBuffer += "462 :Unauthorized command (already registered)\r\n";
-        		return;
-    		}
-
-    		// 2. Check if password was provided
-    		if (cmds.size() < 2) {
-        		m_User_int[fd].writeBuffer += "461 PASS :Not enough parameters\r\n";
-        		return;
-    		}
-
-    		// 3. Store the password for the "All three pass" check
-    		m_User_int[fd].password = cmds[1];
-    
-    		std::cout << "FD " << fd << " set password to: " << cmds[1] << std::endl;
-		}
+			pass(*this, cmds, fd, serverPass);
 		else if (cmds[0] == "NICK")
             nick(*this, cmds, fd);
         else if (cmds[0] == "USER")
@@ -185,7 +176,6 @@ void User::executeCommand(int fd, std::string cmd)
             std::cout << "User " << m_User_int[fd].nickName << " logged in successfully." << std::endl;
         }
     }
-        
 }
 
 std::string User::getNickName(int fd)
@@ -200,7 +190,6 @@ std::string User::getHostName(int fd)
 
 std::string User::getLoginName(int fd)
 {
-
     return m_User_int[fd].loginName;
 }
 int User::getFdByNick(std::string nickName)

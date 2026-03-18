@@ -1,11 +1,22 @@
 #include "Server.hpp"
 #include "User.hpp"
+#include "Channel.hpp"
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cstring>
+#include <csignal>
 
-void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &fds, size_t &index)
+bool stop = false;
+
+void sigint(int num)
+{
+    if (num == SIGINT || num == SIGQUIT)
+        stop = true;
+
+}
+
+void handleClientPollIn(int fd, User &userManager, Channel &channelManager, std::vector<struct pollfd> &fds, size_t &index, std::string serverPass)
 {
     char buffer[1024];
     std::memset(buffer, 0, sizeof(buffer));
@@ -25,7 +36,7 @@ void handleClientPollIn(int fd, User &userManager, std::vector<struct pollfd> &f
     else 
     {
         // 2. Pass to User class for buffer management and command parsing
-        userManager.handleClientData(fd, std::string(buffer));
+        userManager.handleClientData(fd, std::string(buffer), serverPass, channelManager);
     }
 }
 
@@ -82,8 +93,11 @@ void handleServerPollIn(Server &irc, User &userManager)
 void startServerLoop(Server &irc)
 {
     User userManager;
+    Channel channelManager;
+    signal(SIGINT, sigint);
+    signal(SIGQUIT, sigint);
     
-    while (true)
+    while (!stop)
     {
         std::vector<struct pollfd> &fds = irc.getFds();
         int poll_ret = poll(&fds[0], fds.size(), -1);
@@ -98,7 +112,7 @@ void startServerLoop(Server &irc)
                     handleServerPollIn(irc, userManager);
                 else
                 {
-                    handleClientPollIn(fds[i].fd, userManager, fds, i);
+                    handleClientPollIn(fds[i].fd, userManager, channelManager, fds, i, irc.getPass());
                 }
             }
             // Handle POLLOUT and other events as needed
