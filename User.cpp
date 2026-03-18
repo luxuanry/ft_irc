@@ -159,6 +159,10 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             privmsg(*this, channel, cmds, fd);
         else if (cmds[0] == "NICK")
             nick(*this, cmds, fd);
+		else if (cmds[0] == "PART")
+			part(*this, channel, cmds, fd);
+		else if (cmds[0] == "QUIT")
+			quit(*this, channel, cmds, fd);
     }
     else
     {
