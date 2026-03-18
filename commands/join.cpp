@@ -31,7 +31,7 @@ void join(User &user, Channel &channel, std::vector<std::string> cmd, int fd)
 		return;
 
 	// Create channel if it doesn't exist
-	if (!channel.channelExists(channelName))
+	if (!channel.isExist(channelName))
 	{
 		channel.addChannel(channelName);
 		// First user becomes operator

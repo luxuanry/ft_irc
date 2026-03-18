@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 13:25:47 by suna              #+#    #+#             */
-/*   Updated: 2026/03/17 17:26:45 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/18 14:12:08 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,6 @@ class Channel
         std::set<int>& getUsers(std::string channelName);
         Channel();
         ~Channel();
-    
-    bool    isChannelExist(const std::string &channelName);
-    bool    isUserInChannel(const std::string &channelName, int fd);
-    bool    isOperator(const std::string &channelName, int fd);
-        
-    struct channelInfo& getChannelInfo(std::string channelName);
-
 };
 
 #endif

@@ -41,7 +41,7 @@ void privmsg(User &user, Channel &channel, std::vector<std::string> cmd, int fd)
 	if (!target.empty() && target[0] == '#')
 	{
 		// ERR_NOSUCHCHANNEL (403)
-		if (!channel.channelExists(target))
+		if (!channel.isExist(target))
 		{
 			info.writeBuffer += ":server 403 " + nick + " " + target + " :No such channel\r\n";
 			return;

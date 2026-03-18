@@ -17,7 +17,7 @@ void invite(User &user, Channel &channel, std::vector<std::string> cmd, int fd)
 	std::string channelName = cmd[2];
 
 	// ERR_NOSUCHCHANNEL (403)
-	if (!channel.channelExists(channelName))
+	if (!channel.isExist(channelName))
 	{
 		info.writeBuffer += ":server 403 " + nick + " " + channelName + " :No such channel\r\n";
 		return;
