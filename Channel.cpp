@@ -30,6 +30,16 @@ void Channel::addChannel(std::string channelName)
     m_channelList[channelName] = info;
 }
 
+channelInfo& Channel::getChannelInfo(std::string channelName)
+{
+	return m_channelList[channelName];
+}
+
+bool Channel::isExist(std::string channelName)
+{
+	return (m_channelList.count(channelName) > 0);
+}
+
 Channel::Channel()
 {
 }

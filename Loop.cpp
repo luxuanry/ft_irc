@@ -110,7 +110,7 @@ void startServerLoop(Server &irc)
                     handleServerPollIn(irc, userManager);
                 else
                 {
-                    handleClientPollIn(fds[i].fd, userManager, fds, i);
+                    handleClientPollIn(fds[i].fd, userManager, fds, i, irc.getPass());
                 }
             }
             // Handle POLLOUT and other events as needed

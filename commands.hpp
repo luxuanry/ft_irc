@@ -14,9 +14,12 @@
     #define COMMANDS_HPP
 
     #include "User.hpp"
+	#include "Channel.hpp"
     
     void nick(User &user, std::vector<std::string> cmd, int fd);
     void pass(User &user, std::vector<std::string> cmd, int fd, const std::string serverPassword);
     void userCmd(User &userObj, std::vector<std::string> cmds, int fd);
+	void quit(User &user, std::vector<std::string> cmd, int fd);
+	void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd);
 
 #endif

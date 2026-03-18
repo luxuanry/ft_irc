@@ -38,7 +38,9 @@ class Channel
         std::map<std::string, channelInfo> m_channelList;
         void initChannelInfo(channelInfo &info);
     public:
-        void    addChannel(std::string channelName);
+        void    		addChannel(std::string channelName);
+		channelInfo& 	getChannelInfo(std::string channelName);
+		bool 			isExist(std::string channelName);
         Channel();
         ~Channel();
 };
