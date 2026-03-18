@@ -78,7 +78,7 @@ std::pair<int, std::string> Server::acceptClient()
     // Add to poll watch list
     struct pollfd pfd;
     pfd.fd = client_fd;
-    pfd.events = POLLIN | POLLOUT;
+    pfd.events = POLLIN;
     pfd.revents = 0;
     v_fds.push_back(pfd);
 
