@@ -121,6 +121,8 @@ void startServerLoop(Server &irc)
                     handleClientPollIn(fds[i].fd, userManager, channelManager, fds, i, irc.getPass());
                 }
             }
+            if (userManager.getUserInfo(fds[i].fd).writeBuffer != "")
+                fds[i].events |= POLLOUT;
             // Handle POLLOUT and other events as needed
             if (fds[i].revents & POLLOUT)
             {
