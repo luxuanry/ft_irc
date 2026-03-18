@@ -36,7 +36,8 @@ void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
 	}
 
 	// 5. Remove user from channel's user list and user's channel list
-	chanInfo.users.erase(fd);
+	//chanInfo.users.erase(fd);
+	channels.removeUserFromChannel(channelName, fd);
 	info.channelList.erase(channelName);
 
 	// 6. Broadcast PART message to remaining channel members
@@ -48,5 +49,4 @@ void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
     user.setBroadCastMsg(msg);
 
 	std::cout << "User " << info.nickName << " has left channel " << channelName << std::endl;
-
 }
