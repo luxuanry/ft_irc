@@ -39,7 +39,7 @@ class Channel
         void initChannelInfo(channelInfo &info);
     public:
         void    addChannel(std::string channelName);
-        bool    channelExists(std::string channelName);
+        bool 			isExist(std::string channelName);
         channelInfo& getChannelInfo(std::string channelName);
         bool    isUserInChannel(std::string channelName, int fd);
         bool    isOperator(std::string channelName, int fd);

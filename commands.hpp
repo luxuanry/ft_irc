@@ -22,7 +22,8 @@
     void modeCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cmds, int fd);
     void kickCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cmds, int fd);
     void topicCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cmds, int fd);
-    
+    void quit(User &user, std::vector<std::string> cmd, int fd);
+	  void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd);
     void join(User &user, Channel &channel, std::vector<std::string> cmd, int fd);
     void invite(User &user, Channel &channel, std::vector<std::string> cmd, int fd);
     void privmsg(User &user, Channel &channel, std::vector<std::string> cmd, int fd);
