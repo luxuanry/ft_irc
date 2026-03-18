@@ -6,7 +6,7 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/18 14:35:47 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/18 14:56:35 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,12 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
 			part(*this, channel, cmds, fd);
 		else if (cmds[0] == "QUIT")
 			quit(*this, channel, cmds, fd);
+        else if (cmds[0] == "TOPIC")
+            topicCmd(channel, *this, cmds, fd);
+        else if (cmds[0] == "KICK")
+            kickCmd(channel, *this, cmds, fd);
+        else if (cmds[0] == "MODE")
+            modeCmd(channel, *this, cmds, fd);
     }
     else
     {
@@ -172,12 +178,6 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             nick(*this, cmds, fd);
         else if (cmds[0] == "USER")
             userCmd(*this, cmds, fd);
-        else if (cmds[0] == "TOPIC")
-            topicCmd(channel, *this, cmds, fd);
-        else if (cmds[0] == "KICK")
-            kickCmd(channel, *this, cmds, fd);
-        else if (cmds[0] == "MODE")
-            modeCmd(channel, *this, cmds, fd);
         
         if (isLogin(fd)){
             std::string welcome = ":server 001 " + m_User_int[fd].nickName + " :Welcome to the IRC server!\r\n";
