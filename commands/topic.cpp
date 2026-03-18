@@ -12,7 +12,7 @@ void topicCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &c
     }
     std::string chanName = cmds[1];
 
-    if(!chanObj.isChannelExist(chanName)){
+    if(!chanObj.isExist(chanName)){
         std::string errMsg = ":server 403 " + nick + " " + chanName + " :No such channel\r\n";
         userObj.setWrtieBuffer(fd, errMsg);
         return;

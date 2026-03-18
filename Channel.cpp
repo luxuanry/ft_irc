@@ -6,7 +6,7 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 13:25:44 by suna              #+#    #+#             */
-/*   Updated: 2026/03/17 00:00:00 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/18 14:10:39 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,21 +43,21 @@ channelInfo& Channel::getChannelInfo(std::string channelName)
 
 bool Channel::isUserInChannel(std::string channelName, int fd)
 {
-    if (!channelExists(channelName))
+    if (!isExist(channelName))
         return false;
     return m_channelList[channelName].users.count(fd) > 0;
 }
 
 bool Channel::isOperator(std::string channelName, int fd)
 {
-    if (!channelExists(channelName))
+    if (!isExist(channelName))
         return false;
     return m_channelList[channelName].operators.count(fd) > 0;
 }
 
 bool Channel::isInvited(std::string channelName, int fd)
 {
-    if (!channelExists(channelName))
+    if (!isExist(channelName))
         return false;
     return m_channelList[channelName].inviteList.count(fd) > 0;
 }
@@ -69,7 +69,7 @@ void Channel::addUserToChannel(std::string channelName, int fd)
 
 void Channel::removeUserFromChannel(std::string channelName, int fd)
 {
-    if (channelExists(channelName))
+    if (isExist(channelName))
     {
         m_channelList[channelName].users.erase(fd);
         m_channelList[channelName].operators.erase(fd);
