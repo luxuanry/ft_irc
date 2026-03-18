@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:13:46 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 15:38:56 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/17 17:41:08 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <map>
 #include <set>
 #include <iostream>
+
+class Channel;
 
 struct userInfo
 {
@@ -37,10 +39,10 @@ class User
         std::map<int, struct userInfo> m_User_int;
         std::map<std::string, int> m_User_string;
         void    initUserInfo(struct userInfo &info);
-		void	executeCommand(int fd, std::string cmd, std::string serverPass);
+		void	executeCommand(int fd, std::string cmd, std::string serverPass, Channel &channel);
 		
     public:
-		void	handleClientData(int fd, std::string rawInput, std::string serverPass);
+		void	handleClientData(int fd, std::string rawInput, std::string serverPass, Channel &channel);
         void    addUserMapInt(int fd);
         void    addUserString(int fd, std::string nick);
         void    setHostName(int fd, std::string HostName);
@@ -54,6 +56,7 @@ class User
         std::string getNickName(int fd);
         std::string getHostName(int fd);
         std::string getLoginName(int fd);
+        int         getFdByNick(std::string nickName);
 
         User();
         ~User();

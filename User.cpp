@@ -6,11 +6,12 @@
 /*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/16 16:33:50 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/17 17:41:40 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "User.hpp"
+#include "Channel.hpp"
 #include <utility>
 #include <iostream>
 #include "commands.hpp"
@@ -73,10 +74,10 @@ void User::setHostName(int fd ,std::string HostName)
 
 void User::removeUser(int fd)
 {
-    // std::string nick = m_User_int[fd].nickName;
-    // if (!nick.empty()) {
-    //     m_User_string.erase(nick); 
-    // }
+    std::string nick = m_User_int[fd].nickName;
+    if (!nick.empty()) {
+        m_User_string.erase(nick); 
+    }
 	m_User_int.erase(fd);
 }
 
@@ -100,7 +101,7 @@ void User::setBroadCastMsg(std::string msg)
         setWrtieBuffer(it->first, msg);
 }
 
-void User::handleClientData(int fd, std::string rawInput, std::string serverPass)
+void User::handleClientData(int fd, std::string rawInput, std::string serverPass, Channel &channel)
 {
     // 1. storing the input data to readbuffer
     m_User_int[fd].readBuffer += rawInput;
@@ -111,14 +112,14 @@ void User::handleClientData(int fd, std::string rawInput, std::string serverPass
     {
         // 3. split the command which ends in \n (or \r\n)
         std::string command = m_User_int[fd].readBuffer.substr(0, pos);
-        
+
         // Clean up \r if it exists
         if (!command.empty() && command[command.size() - 1] == '\r')
             command.erase(command.size() - 1);
 
         // 4. distinct the command with the first word
         if (!command.empty())
-            executeCommand(fd, command, serverPass);
+            executeCommand(fd, command, serverPass, channel);
 
         // Remove processed command from buffer
         m_User_int[fd].readBuffer.erase(0, pos + 1);
@@ -145,12 +146,19 @@ bool User::isExist(std::string nickName)
 
 
 
-void User::executeCommand(int fd, std::string cmd, std::string serverPass)
+void User::executeCommand(int fd, std::string cmd, std::string serverPass, Channel &channel)
 {
     std::vector<std::string> cmds = split(cmd, " ");
     if (isLogin(fd))
     {
-            //rest of the commands
+        if (cmds[0] == "JOIN")
+            join(*this, channel, cmds, fd);
+        else if (cmds[0] == "INVITE")
+            invite(*this, channel, cmds, fd);
+        else if (cmds[0] == "PRIVMSG")
+            privmsg(*this, channel, cmds, fd);
+        else if (cmds[0] == "NICK")
+            nick(*this, cmds, fd);
     }
     else
     {
@@ -168,7 +176,6 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass)
             std::cout << "User " << m_User_int[fd].nickName << " logged in successfully." << std::endl;
         }
     }
-        
 }
 
 std::string User::getNickName(int fd)
@@ -183,8 +190,12 @@ std::string User::getHostName(int fd)
 
 std::string User::getLoginName(int fd)
 {
-
     return m_User_int[fd].loginName;
 }
-
+int User::getFdByNick(std::string nickName)
+{
+    if (isExist(nickName))
+        return m_User_string[nickName];
+    return -1;
+}
 
