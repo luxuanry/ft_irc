@@ -19,6 +19,8 @@
 #include <set>
 #include <iostream>
 
+class Channel;
+
 struct userInfo
 {
     std::string nickName;
@@ -37,10 +39,10 @@ class User
         std::map<int, struct userInfo> m_User_int;
         std::map<std::string, int> m_User_string;
         void    initUserInfo(struct userInfo &info);
-		void	executeCommand(int fd, std::string cmd, std::string serverPass);
+		void	executeCommand(int fd, std::string cmd, std::string serverPass, Channel &channel);
 		
     public:
-		void	handleClientData(int fd, std::string rawInput, std::string serverPass);
+		void	handleClientData(int fd, std::string rawInput, std::string serverPass, Channel &channel);
         void    addUserMapInt(int fd);
         void    addUserString(int fd, std::string nick);
         void    setHostName(int fd, std::string HostName);
@@ -54,6 +56,7 @@ class User
         std::string getNickName(int fd);
         std::string getHostName(int fd);
         std::string getLoginName(int fd);
+        int         getFdByNick(std::string nickName);
 
         User();
         ~User();
