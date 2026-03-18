@@ -168,6 +168,13 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             nick(*this, cmds, fd);
         else if (cmds[0] == "USER")
             userCmd(*this, cmds, fd);
+        else if (cmds[0] == "TOPIC")
+            topicCmd(channel, *this, cmds, fd);
+        else if (cmds[0] == "KICK")
+            kickCmd(channel, *this, cmds, fd);
+        else if (cmds[0] == "MODE")
+            modeCmd(channel, *this, cmds, fd);
+        
         if (isLogin(fd)){
             std::string welcome = ":server 001 " + m_User_int[fd].nickName + " :Welcome to the IRC server!\r\n";
             m_User_int[fd].writeBuffer += welcome;
