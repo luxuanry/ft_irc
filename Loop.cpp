@@ -5,16 +5,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cstring>
-#include <csignal>
 
 bool stop = false;
-
-void sigint(int num)
-{
-    if (num == SIGINT || num == SIGQUIT)
-        stop = true;
-
-}
 
 void cleanupUserChannels(int fd, User &userManager, Channel &channelManager)
 {
@@ -141,23 +133,37 @@ void startServerLoop(Server &irc)
 {
     User userManager;
     Channel channelManager;
-    signal(SIGINT, sigint);
-    signal(SIGQUIT, sigint);
-    
+
+    // Add stdin to poll list for server commands
+    struct pollfd stdin_pfd;
+    stdin_pfd.fd = STDIN_FILENO;
+    stdin_pfd.events = POLLIN;
+    stdin_pfd.revents = 0;
+    irc.getFds().push_back(stdin_pfd);
+
     while (!stop)
     {
         std::vector<struct pollfd> &fds = irc.getFds();
         int poll_ret = poll(&fds[0], fds.size(), -1);
-        
+
         if (poll_ret == -1)
-        {
-            if (errno == EINTR)
-                continue;
             break;
-        }
 
         for (size_t i = 0; i < fds.size(); ++i)
         {
+            // Check stdin for server commands
+            if (fds[i].fd == STDIN_FILENO)
+            {
+                if (fds[i].revents & POLLIN)
+                {
+                    std::string input;
+                    std::getline(std::cin, input);
+                    if (input == "quit" || input == "exit")
+                        stop = true;
+                }
+                continue;
+            }
+
             // Skip server socket for client handling
             if (fds[i].fd == irc.getSocket())
             {
