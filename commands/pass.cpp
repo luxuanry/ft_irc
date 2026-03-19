@@ -4,24 +4,28 @@ void pass(User &user, std::vector<std::string> cmd, int fd, const std::string se
 {
     struct userInfo &info = user.getUserInfo(fd);
 
+    std::string nick = user.getNickName(fd);
+    if (nick.empty())
+        nick = "*";
+
     // 1. Check if already registered (Error 462)
     if (info.status >= 1)
     {
-        info.writeBuffer += "462 :Unauthorized command (already registered)\r\n";
+        info.writeBuffer += ":server 462 " + nick + " :Unauthorized command (already registered)\r\n";
         return;
     }
 
     // 2. Check if password was provided (Error 461)
     if (cmd.size() < 2)
     {
-        info.writeBuffer += "461 PASS :Not enough parameters\r\n";
+        info.writeBuffer += ":server 461 " + nick + " PASS :Not enough parameters\r\n";
         return;
     }
 
     // 3. THE COMPARISON
     if (cmd[1] != serverPassword)
     {
-        info.writeBuffer += "464 :Password incorrect\r\n";
+        info.writeBuffer += ":server 464 " + nick + " :Password incorrect\r\n";
         return;
     }
 

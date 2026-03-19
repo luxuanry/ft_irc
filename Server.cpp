@@ -27,13 +27,13 @@ void	Server::_initSocket(int port)
 {
 	//create socket 
     if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-        throw "socket() error";
+        throw std::runtime_error("socket() error");
     fcntl (m_socket, F_SETFL, O_NONBLOCK);
 
     int opt = 1;
     if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-        throw "setsockopt() error";
-        
+        throw std::runtime_error("setsockopt() error");
+
     //bind  socket
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
@@ -42,11 +42,11 @@ void	Server::_initSocket(int port)
     serverAddr.sin_port = htons(port);
 
     if (bind(m_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) == -1)
-        throw "bind() error";
+        throw std::runtime_error("bind() error");
 
     //listen to connect
     if (listen(m_socket, 10) == -1)
-        throw "listen() error";
+        throw std::runtime_error("listen() error");
 
     //add to the eventlist
     struct pollfd pfd;
