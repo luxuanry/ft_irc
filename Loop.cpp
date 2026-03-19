@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <cstring>
 
-bool stop = false;
 
 void cleanupUserChannels(int fd, User &userManager, Channel &channelManager)
 {
@@ -133,6 +132,8 @@ void startServerLoop(Server &irc)
 {
     User userManager;
     Channel channelManager;
+
+    bool stop = false;
 
     // Add stdin to poll list for server commands
     struct pollfd stdin_pfd;
