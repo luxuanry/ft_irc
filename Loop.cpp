@@ -35,9 +35,7 @@ bool handleClientPollIn(int fd, User &userManager, Channel &channelManager, std:
 
     if (bytes_read == -1)
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-            return false; // No data available, not an error
-        // Actual error - disconnect
+        // poll() already confirmed POLLIN, so any recv error is a real error
         std::cout << "Client " << fd << " recv error." << std::endl;
         cleanupUserChannels(fd, userManager, channelManager);
         close(fd);
