@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/18 14:56:35 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/18 15:17:41 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ std::vector<std::string> split(std::string str, std::string std)
     size_t cut;
     while ((cut = str.find(std)) != std::string::npos)
     {
-        if (str[0] == ';')
+        if (str[0] == ':')
             break;
         std::string word = str.substr(0, cut);
         rst.push_back(word);
@@ -149,6 +149,9 @@ bool User::isExist(std::string nickName)
 void User::executeCommand(int fd, std::string cmd, std::string serverPass, Channel &channel)
 {
     std::vector<std::string> cmds = split(cmd, " ");
+    if (cmds.empty())
+        return;
+    //std::cout << "[DEBUG] fd " << fd << " sent command: [" << cmds[0] << "] with " << cmds.size() << " arguments." << std::endl;
     if (isLogin(fd))
     {
         if (cmds[0] == "JOIN")
@@ -159,10 +162,10 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             privmsg(*this, channel, cmds, fd);
         else if (cmds[0] == "NICK")
             nick(*this, cmds, fd);
-		else if (cmds[0] == "PART")
-			part(*this, channel, cmds, fd);
-		else if (cmds[0] == "QUIT")
-			quit(*this, channel, cmds, fd);
+		    else if (cmds[0] == "PART")
+			      part(*this, channel, cmds, fd);
+		    else if (cmds[0] == "QUIT")
+			       quit(*this, channel, cmds, fd);
         else if (cmds[0] == "TOPIC")
             topicCmd(channel, *this, cmds, fd);
         else if (cmds[0] == "KICK")

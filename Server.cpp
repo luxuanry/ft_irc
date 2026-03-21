@@ -3,7 +3,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <fcntl.h>
+#include <sys/socket.h>
 
 Server::Server(int port, std::string pass)
 {
@@ -26,14 +26,13 @@ std::string Server::getPass() const { return _pass; }
 void	Server::_initSocket(int port)
 {
 	//create socket 
-    if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-        throw "socket() error";
-    fcntl (m_socket, F_SETFL, O_NONBLOCK);
+    if ((m_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) == -1)
+        throw std::runtime_error("socket() error");
 
     int opt = 1;
     if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-        throw "setsockopt() error";
-        
+        throw std::runtime_error("setsockopt() error");
+
     //bind  socket
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
@@ -42,11 +41,11 @@ void	Server::_initSocket(int port)
     serverAddr.sin_port = htons(port);
 
     if (bind(m_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) == -1)
-        throw "bind() error";
+        throw std::runtime_error("bind() error");
 
     //listen to connect
     if (listen(m_socket, 10) == -1)
-        throw "listen() error";
+        throw std::runtime_error("listen() error");
 
     //add to the eventlist
     struct pollfd pfd;
@@ -66,13 +65,10 @@ std::pair<int, std::string> Server::acceptClient()
     int client_fd;
     std::string hostName;
 
-    // Accept the new connection, get client_fd
-    client_fd = accept(m_socket, (struct sockaddr*)&clientAddr, &clientLen);
+    // Accept the new connection with non-blocking mode
+    client_fd = accept4(m_socket, (struct sockaddr*)&clientAddr, &clientLen, SOCK_NONBLOCK);
     if (client_fd == -1)
         throw std::runtime_error("Accepting new Client failed");
-
-    // Set non-blocking mode
-    fcntl(client_fd, F_SETFL, O_NONBLOCK);
     hostName = inet_ntoa(clientAddr.sin_addr);
 
     // Add to poll watch list

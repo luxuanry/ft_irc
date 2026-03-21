@@ -15,15 +15,12 @@ void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
         return;
     }
 
-    std::string channelName = cmd[1];
-    if (!channels.isExist(channelName)) {
-        user.setWrtieBuffer(fd, "403 " + channelName + " :No such channel\r\n");
-        return;
-    }
-    if (!channels.isUserInChannel(channelName, fd)) {
-        user.setWrtieBuffer(fd, "442 " + channelName + " :You're not on that channel\r\n");
-        return;
-    }
+	// 4. Check if the user is actually in the channel
+	if (info.channelList.find(channelName) == info.channelList.end())
+	{
+		info.writeBuffer += "442 " + channelName + " :You're not on that channel\r\n";
+		return;
+	}
 
     // Capture full reason: join everything from cmd[2] onwards
     std::string reason = "";
