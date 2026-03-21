@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/18 15:17:41 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/21 14:53:45 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,10 +162,10 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             privmsg(*this, channel, cmds, fd);
         else if (cmds[0] == "NICK")
             nick(*this, cmds, fd);
-		    else if (cmds[0] == "PART")
-			      part(*this, channel, cmds, fd);
-		    else if (cmds[0] == "QUIT")
-			       quit(*this, channel, cmds, fd);
+		else if (cmds[0] == "PART")
+			part(*this, channel, cmds, fd);
+		else if (cmds[0] == "QUIT")
+			quit(*this, channel, cmds, fd);
         else if (cmds[0] == "TOPIC")
             topicCmd(channel, *this, cmds, fd);
         else if (cmds[0] == "KICK")
