@@ -145,6 +145,12 @@ void startServerLoop(Server &irc)
     while (!stop)
     {
         std::vector<struct pollfd> &fds = irc.getFds();
+        for (size_t i = 1; i < fds.size(); ++i) { // skip server fd
+            int clientFd = fds[i].fd;
+            if (!userManager.getUserInfo(clientFd).writeBuffer.empty()) {
+                fds[i].events |= POLLOUT; 
+            }
+        }
         int poll_ret = poll(&fds[0], fds.size(), -1);
 
         if (poll_ret == -1)
