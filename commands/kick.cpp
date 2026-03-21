@@ -50,7 +50,7 @@ void kickCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
         return;
     }
 
-    std::string kickMsg = ":" + execNick + " KICK " + chanName + " " + targetNick + " :" + reason + "\r\n";
+    std::string kickMsg = ":" + execNick + " KICK " + chanName + " " + targetNick + reason + "\r\n";
 
     for (std::set<int>::iterator it = info.users.begin(); it != info.users.end(); ++it) {
         userObj.setWrtieBuffer(*it, kickMsg);
