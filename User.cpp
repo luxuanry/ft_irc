@@ -23,7 +23,7 @@ std::vector<std::string> split(std::string str, std::string std)
     size_t cut;
     while ((cut = str.find(std)) != std::string::npos)
     {
-        if (str[0] == ';')
+        if (str[0] == ':')
             break;
         std::string word = str.substr(0, cut);
         rst.push_back(word);

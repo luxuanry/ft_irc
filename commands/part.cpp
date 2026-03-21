@@ -28,7 +28,6 @@ void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
 	}
 
 	// 4. Check if the user is actually in the channel
-	channelInfo &chanInfo = channels.getChannelInfo(channelName);
 	if (info.channelList.find(channelName) == info.channelList.end())
 	{
 		info.writeBuffer += "442 " + channelName + " :You're not on that channel\r\n";

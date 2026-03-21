@@ -86,6 +86,13 @@ void Channel::addToInviteList(std::string channelName, int fd)
     m_channelList[channelName].inviteList.insert(fd);
 }
 
+void Channel::removeFromAllInviteLists(int fd)
+{
+    std::map<std::string, channelInfo>::iterator it;
+    for (it = m_channelList.begin(); it != m_channelList.end(); ++it)
+        it->second.inviteList.erase(fd);
+}
+
 std::set<int>& Channel::getUsers(std::string channelName)
 {
     return m_channelList[channelName].users;

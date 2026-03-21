@@ -48,6 +48,7 @@ class Channel
         void    removeUserFromChannel(std::string channelName, int fd);
         void    addOperator(std::string channelName, int fd);
         void    addToInviteList(std::string channelName, int fd);
+        void    removeFromAllInviteLists(int fd);
         std::set<int>& getUsers(std::string channelName);
         Channel();
         ~Channel();
