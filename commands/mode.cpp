@@ -16,7 +16,7 @@ void modeCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
     std::string chanName = cmds[1];
 
     if(!chanObj.isExist(chanName)){
-        std::string errMsg = ":server 403 "  + chanName + " :No such channel\r\n";
+        std::string errMsg = ":server 403 " + execNick + " " + chanName + " :No such channel\r\n";
         userObj.setWrtieBuffer(fd, errMsg);
         return;
     }

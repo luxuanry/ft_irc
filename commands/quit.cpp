@@ -3,28 +3,30 @@
 void quit(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
 {
     struct userInfo &info = user.getUserInfo(fd);
-    
+
     // 1. Get the reason
     std::string reason = (cmd.size() > 1) ? cmd[1] : "Client Quit";
     if (reason[0] == ':') reason.erase(0, 1);
 
-    // 2. Notify all channels this user was in
+    // 2. PART from all channels (sends PART messages, not QUIT)
     if (user.isLogin(fd))
     {
-        std::string quitNotice = ":" + info.nickName + "!" + info.loginName + "@" + info.hostName + " QUIT :" + reason + "\r\n";
-        std::set<std::string>::iterator it = info.channelList.begin();
-        for (; it != info.channelList.end(); ++it)
+        std::string prefix = ":" + info.nickName + "!" + info.loginName + "@" + info.hostName;
+        std::set<std::string> channelsCopy = info.channelList;
+        std::set<std::string>::iterator it;
+        for (it = channelsCopy.begin(); it != channelsCopy.end(); ++it)
         {
-            std::string channelName = *it; 
+            std::string channelName = *it;
+            std::string partMsg = prefix + " PART " + channelName + " :" + reason + "\r\n";
+
             std::set<int> &channelUsers = channels.getUsers(channelName);
             for (std::set<int>::iterator uIt = channelUsers.begin(); uIt != channelUsers.end(); ++uIt)
             {
-                if (*uIt != fd) // Don't send it to the quitting user themselves
-                    user.getUserInfo(*uIt).writeBuffer += quitNotice;
+                if (*uIt != fd)
+                    user.getUserInfo(*uIt).writeBuffer += partMsg;
             }
             channels.removeUserFromChannel(channelName, fd);
         }
-        
         info.channelList.clear();
     }
 
