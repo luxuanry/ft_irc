@@ -7,8 +7,11 @@ void userCmd(User &userObj, std::vector<std::string> cmds, int fd)
 
     if (cmds.size() < 5)
     {
-        std::string errorMsg = ":server 461 " + cmds[0] + " :Not enough parameters\r\n";
-        info.writeBuffer += errorMsg; 
+        std::string nick = userObj.getNickName(fd);
+        if (nick.empty())
+            nick = "*";
+        std::string errorMsg = ":server 461 " + nick + " USER :Not enough parameters\r\n";
+        info.writeBuffer += errorMsg;
         return;
     }
     info.loginName = cmds[1];

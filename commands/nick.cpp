@@ -48,10 +48,24 @@ void nick(User &user, std::vector<std::string> cmd, int fd)
     std::string msg = prefixMsg(nickName, loginName, hostName, "NICK", newNick);
     bool wasLogged = user.isLogin(fd);
 
+    struct userInfo &info = user.getUserInfo(fd);
+    std::string currentNick = nickName.empty() ? "*" : nickName;
+
+    if (newNick.empty())
+    {
+        info.writeBuffer += ":server 431 " + currentNick + " :No nickname given\r\n";
+        return;
+    }
     if (!isValidNickName(newNick))
+    {
+        info.writeBuffer += ":server 432 " + currentNick + " " + newNick + " :Erroneous nickname\r\n";
         return;
+    }
     if (user.isExist(newNick))
+    {
+        info.writeBuffer += ":server 433 " + currentNick + " " + newNick + " :Nickname is already in use\r\n";
         return;
+    }
     user.setNickName(fd, newNick);
 
     if (wasLogged)
