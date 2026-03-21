@@ -86,7 +86,7 @@ void join(User &user, Channel &channel, std::vector<std::string> cmd, int fd)
 	// RPL_TOPIC (332) - send topic if set
 	channelInfo &chInfo = channel.getChannelInfo(channelName);
 	if (!chInfo.topic.empty())
-		info.writeBuffer += ":server 332 " + user.getNickName(fd) + " " + channelName + " TOPIC:" + chInfo.topic + "\r\n";
+		info.writeBuffer += ":server 332 " + user.getNickName(fd) + " " + channelName + " TOPIC " + chInfo.topic + "\r\n";
 
 	// RPL_NAMREPLY (353) - send list of users in channel
 	std::string nameList;

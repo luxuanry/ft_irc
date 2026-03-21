@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   topic.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 14:44:29 by lcao              #+#    #+#             */
-/*   Updated: 2026/03/18 16:38:21 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/21 14:12:55 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,32 +48,32 @@ void topicCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &c
             std::string msg = ":server 331 " + nick + " " + chanName + " :No topic is set\r\n";
             userObj.setWrtieBuffer(fd, msg);
         } else {
-            std::string msg = ":server 332 " + nick + " " + chanName + " :" + info.topic + "\r\n";
+            std::string msg = ":server 332 " + nick + " " + chanName + " " + info.topic + "\r\n";
             userObj.setWrtieBuffer(fd, msg);
         }
         return;
     }
     
     else {
-        if (info.topicRestriced && info.operators.find(fd) == info.operators.end()) {
+        if (info.topicRestriced && !info.operators.count(fd)) {
             std::string errMsg = ":server 482 " + nick + " " + chanName + " :You're not channel operator\r\n";
             userObj.setWrtieBuffer(fd, errMsg);
             return;
         }
         
-        // std::string fullTopic = "";
-        // for (size_t i = 2; i < cmds.size(); ++i) {
-        //     fullTopic += cmds[i];
-        //     if (i != cmds.size() - 1) {
-        //         fullTopic += " ";
-        //     }
-        // }
+        std::string fullTopic = "";
+        for (size_t i = 2; i < cmds.size(); ++i) {
+            fullTopic += cmds[i];
+            if (i != cmds.size() - 1) {
+                fullTopic += " ";
+            }
+        }
         
         // if (!fullTopic.empty() && fullTopic[0] == ':') {
         //     fullTopic = fullTopic.substr(1);
         // }
 
-        // info.topic = fullTopic;
+        info.topic = fullTopic;
 
         std::string broadcastMsg = ":" + nick + " TOPIC " + chanName + info.topic + "\r\n";
         
