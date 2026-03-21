@@ -10,9 +10,25 @@
 void cleanupUserChannels(int fd, User &userManager, Channel &channelManager)
 {
     struct userInfo &info = userManager.getUserInfo(fd);
+    std::string prefix = ":" + info.nickName + "!" + info.loginName + "@" + info.hostName;
+
+    // Send PART messages to all channels the user was in
     std::set<std::string>::iterator it;
     for (it = info.channelList.begin(); it != info.channelList.end(); ++it)
+    {
+        std::string channelName = *it;
+        if (channelManager.isExist(channelName))
+        {
+            std::string partMsg = prefix + " PART " + channelName + " :Connection closed\r\n";
+            std::set<int> &channelUsers = channelManager.getUsers(channelName);
+            for (std::set<int>::iterator uIt = channelUsers.begin(); uIt != channelUsers.end(); ++uIt)
+            {
+                if (*uIt != fd)
+                    userManager.getUserInfo(*uIt).writeBuffer += partMsg;
+            }
+        }
         channelManager.removeUserFromChannel(*it, fd);
+    }
     channelManager.removeFromAllInviteLists(fd);
 }
 
@@ -37,8 +53,8 @@ bool handleClientPollIn(int fd, User &userManager, Channel &channelManager, std:
     }
     if (bytes_read == 0)
     {
-        // Client closed connection
-        std::cout << "Client " << fd << " disconnected." << std::endl;
+        // Client closed connection (EOF / ctrl+d)
+        std::cout << "Client " << fd << " disconnected (EOF)." << std::endl;
         cleanupUserChannels(fd, userManager, channelManager);
         close(fd);
         userManager.removeUser(fd);
@@ -47,7 +63,7 @@ bool handleClientPollIn(int fd, User &userManager, Channel &channelManager, std:
         return true;
     }
 
-    // 2. Check readBuffer size limit (4096 bytes) - flood protection
+    // 2. Check readBuffer size limit (512 bytes) - flood protection
     std::string &readBuf = userManager.getUserInfo(fd).readBuffer;
     if (readBuf.size() + bytes_read > 512)
     {
@@ -98,7 +114,7 @@ void handleClientPollOut(Server &irc, User &userManager, Channel &channelManager
 			i--; // Adjust index after erasing
 		}
 	}
-    
+
 	if (wBuf.empty() && info.status == -1)
 	{
 		std::cout << "Closing connection for FD " << fd << " (QUIT processed) " << std::endl;
@@ -142,6 +158,17 @@ void startServerLoop(Server &irc)
     while (!stop)
     {
         std::vector<struct pollfd> &fds = irc.getFds();
+
+        // Enable POLLOUT for all fds with non-empty write buffers BEFORE poll()
+        for (size_t i = 0; i < fds.size(); ++i)
+        {
+            if (fds[i].fd == STDIN_FILENO || fds[i].fd == irc.getSocket())
+                continue;
+            if (!userManager.getUserInfo(fds[i].fd).writeBuffer.empty() ||
+                userManager.getUserInfo(fds[i].fd).status == -1)
+                fds[i].events |= POLLOUT;
+        }
+
         int poll_ret = poll(&fds[0], fds.size(), -1);
 
         if (poll_ret == -1)
@@ -188,6 +215,7 @@ void startServerLoop(Server &irc)
                     continue; // Client was removed, skip to next
             }
 
+            // Enable POLLOUT after processing POLLIN (for messages generated this cycle)
             if (!userManager.getUserInfo(fds[i].fd).writeBuffer.empty() ||
 						userManager.getUserInfo(fds[i].fd).status == -1)
                 fds[i].events |= POLLOUT;
@@ -204,7 +232,7 @@ void startServerLoop(Server &irc)
     std::string shutdownMsg = "ERROR :Server shutting down\r\n";
     for (size_t i = 0; i < fds.size(); ++i)
     {
-        if (fds[i].fd != irc.getSocket())
+        if (fds[i].fd != irc.getSocket() && fds[i].fd != STDIN_FILENO)
             send(fds[i].fd, shutdownMsg.c_str(), shutdownMsg.size(), 0);
     }
 }

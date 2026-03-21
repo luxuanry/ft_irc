@@ -56,8 +56,6 @@ void kickCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
         userObj.setWrtieBuffer(*it, kickMsg);
     }
 
-    info.users.erase(targetFd);
-    if (info.operators.find(targetFd) != info.operators.end()) {
-        info.operators.erase(targetFd);
-    }
+    chanObj.removeUserFromChannel(chanName, targetFd);
+    userObj.getUserInfo(targetFd).channelList.erase(chanName);
 }
