@@ -6,7 +6,7 @@
 /*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/21 15:02:51 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/21 15:10:07 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,10 +188,12 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             m_User_int[fd].writeBuffer += ":server 421 " + m_User_int[fd].nickName + " :Unkown command\r\n";
         
         if (isLogin(fd)){
+            time_t now = time(0);
+            std::string date = ctime(&now);
             std::string welcome = ":server 001 " + m_User_int[fd].nickName + " :Welcome to the IRC server!\r\n";
-            std::string welcome = ":server 002 " + m_User_int[fd].nickName + " :Your host is " + m_User_int[fd].hostName + ", running version 1.0\r\n";
-            std::string welcome = ":server 003 " + m_User_int[fd].nickName + " :This server was created today\r\n";
-            std::string welcome = ":server 004 " + m_User_int[fd].nickName + " " + "ft_irc v:1.0\r\n";
+            welcome += ":server 002 " + m_User_int[fd].nickName + " :Your host is " + m_User_int[fd].hostName + ", running version 1.0\r\n";
+            welcome += ":server 003 " + m_User_int[fd].nickName + " :This server was created " + date;
+            welcome += ":server 004 " + m_User_int[fd].nickName + " " + ":ft_irc v:1.0\r\n";
             m_User_int[fd].writeBuffer += welcome;
             m_User_int[fd].status = 1; //change the status as connected
 
