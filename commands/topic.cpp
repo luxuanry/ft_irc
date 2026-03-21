@@ -6,7 +6,7 @@
 /*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 14:44:29 by lcao              #+#    #+#             */
-/*   Updated: 2026/03/18 15:11:17 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/18 16:38:21 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,23 +61,22 @@ void topicCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &c
             return;
         }
         
-        std::string fullTopic = "";
-        for (size_t i = 2; i < cmds.size(); ++i) {
-            fullTopic += cmds[i];
-            if (i != cmds.size() - 1) {
-                fullTopic += " ";
-            }
-        }
+        // std::string fullTopic = "";
+        // for (size_t i = 2; i < cmds.size(); ++i) {
+        //     fullTopic += cmds[i];
+        //     if (i != cmds.size() - 1) {
+        //         fullTopic += " ";
+        //     }
+        // }
         
-        if (!fullTopic.empty() && fullTopic[0] == ':') {
-            fullTopic = fullTopic.substr(1);
-        }
+        // if (!fullTopic.empty() && fullTopic[0] == ':') {
+        //     fullTopic = fullTopic.substr(1);
+        // }
 
-        info.topic = fullTopic;
+        // info.topic = fullTopic;
 
-        std::string broadcastMsg = ":" + nick + " TOPIC " + chanName + " :" + info.topic + "\r\n";
+        std::string broadcastMsg = ":" + nick + " TOPIC " + chanName + info.topic + "\r\n";
         
-        //std::cout << "[DEBUG] Topic set to [" << info.topic << "]! Broadcasting to " << info.users.size() << " users." << std::endl;
         for (std::set<int>::iterator it = info.users.begin(); it != info.users.end(); ++it) {
             userObj.setWrtieBuffer(*it, broadcastMsg);
         }
