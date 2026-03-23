@@ -124,6 +124,12 @@ void handleClientPollOut(Server &irc, User &userManager, Channel &channelManager
 		i--; // Adjust index after erasing
 		return ;
 	}
+<<<<<<< HEAD
+=======
+
+	if(wBuf.empty() && info.status != -1)
+        fds[i].events &= ~POLLOUT; // Disable POLLOUT if there's nothing to write
+>>>>>>> 779a71e3ce258659437a6b09e6c080bc370d168e
 }
 
 void handleServerPollIn(Server &irc, User &userManager)
@@ -215,7 +221,10 @@ void startServerLoop(Server &irc)
                     continue; // Client was removed, skip to next
             }
 
+<<<<<<< HEAD
             // Enable POLLOUT after processing POLLIN (for messages generated this cycle)
+=======
+>>>>>>> 779a71e3ce258659437a6b09e6c080bc370d168e
             if (!userManager.getUserInfo(fds[i].fd).writeBuffer.empty() ||
 						userManager.getUserInfo(fds[i].fd).status == -1)
                 fds[i].events |= POLLOUT;

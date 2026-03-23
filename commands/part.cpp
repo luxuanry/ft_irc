@@ -7,6 +7,7 @@ void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
 	if (nick.empty())
 		nick = "*";
 
+<<<<<<< HEAD
 	// 1. Check if the user is logged in
 	if (info.status < 1)
 	{
@@ -54,3 +55,34 @@ void part(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
 
 	std::cout << "User " << info.nickName << " has left channel " << channelName << std::endl;
 }
+=======
+	// 4. Check if the user is actually in the channel
+	if (info.channelList.find(channelName) == info.channelList.end())
+	{
+		info.writeBuffer += "442 " + channelName + " :You're not on that channel\r\n";
+		return;
+	}
+
+    // Capture full reason: join everything from cmd[2] onwards
+    std::string reason = "";
+    if (cmd.size() > 2) {
+        reason = cmd[2];
+        for (size_t i = 3; i < cmd.size(); i++)
+            reason += " " + cmd[i];
+        if (reason[0] == ':') reason.erase(0, 1);
+    }
+
+    std::string msg = ":" + info.nickName + "!" + info.loginName + "@" + info.hostName + " PART " + channelName;
+    if (!reason.empty()) msg += " :" + reason;
+    msg += "\r\n";
+    
+    // Broadcast to channel members
+    std::set<int> &users = channels.getUsers(channelName);
+    for (std::set<int>::iterator it = users.begin(); it != users.end(); ++it)
+        user.setWrtieBuffer(*it, msg);
+
+    channels.removeUserFromChannel(channelName, fd);
+    info.channelList.erase(channelName);
+    std::cout << "User " << info.nickName << " has left channel " << channelName << std::endl;
+}
+>>>>>>> 779a71e3ce258659437a6b09e6c080bc370d168e
