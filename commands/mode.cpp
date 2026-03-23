@@ -54,10 +54,10 @@ void modeCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
     for (size_t i = 0; i < modeString.length(); ++i) {
         char c = modeString[i];
 
-        if (c == '+') {
+        if (c == '+' && i == 0) {
             isAdding = true;
             modeChanges += "+";
-        } else if (c == '-') {
+        } else if (c == '-' && i == 0) {
             isAdding = false;
             modeChanges += "-";
         } else {
@@ -114,6 +114,7 @@ void modeCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
                             modeArgs += " " + targetUser;
                         } else {
                             std::string reply = ":server 401 " + execNick + " " + chanName + " " + "\r\n";
+                            userObj.setWrtieBuffer(fd, reply);
                         }
                         argIndex++;
                     }
