@@ -209,7 +209,7 @@ void startServerLoop(Server &irc)
                 continue;
             }
 
-            if (fds[i].revents & POLLIN)
+            if (fds[i].revents & (POLLIN | POLLHUP | POLLERR))
             {
                 if (handleClientPollIn(fds[i].fd, userManager, channelManager, fds, i, irc.getPass()))
                     continue; // Client was removed, skip to next
