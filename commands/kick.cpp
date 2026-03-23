@@ -1,5 +1,6 @@
 #include "../Channel.hpp"
 #include "../commands.hpp"
+#include <iostream>
 
 void kickCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cmds, int fd)
 {
@@ -12,19 +13,15 @@ void kickCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
 
     std::string chanName = cmds[1];
     std::string targetNick = cmds[2];
-  
-    std::string reason = (cmds.size() > 3) ? cmds[3] : "No reason specified";
-
-    std::string nick = userObj.getNickName(fd);
 
     if(!chanObj.isExist(chanName)){
-        std::string errMsg = ":server 403 " + nick + " " + chanName + " :No such channel\r\n";
+        std::string errMsg = ":server 403 " + execNick + " " + chanName + " :No such channel\r\n";
         userObj.setWrtieBuffer(fd, errMsg);
         return;
     }
     
     if(!chanObj.isUserInChannel(chanName, fd)){
-        std::string errMsg = ":server 442 " + nick + " " + chanName + " :You're not on that channel\r\n";
+        std::string errMsg = ":server 442 " + execNick + " " + chanName + " :You're not on that channel\r\n";
         userObj.setWrtieBuffer(fd, errMsg);
         return;
     }
@@ -50,12 +47,47 @@ void kickCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
         return;
     }
 
-    std::string kickMsg = ":" + execNick + " KICK " + chanName + " " + targetNick + reason + "\r\n";
+    // fix: when there is blank space
+    std::string reason = "No reason specified";
+    if (cmds.size() > 3) {
+        reason = "";
+        for (size_t i = 3; i < cmds.size(); ++i) {
+            reason += cmds[i];
+            if (i != cmds.size() - 1) reason += " ";
+        }
+        if (!reason.empty() && reason[0] == ':') {
+            reason = reason.substr(1);
+        }
+    }
 
+
+    std::string kickMsg = ":" + execNick + " KICK " + chanName + " " + targetNick + " :" + reason + "\r\n";
+    // 1.broadcast before kicking
     for (std::set<int>::iterator it = info.users.begin(); it != info.users.end(); ++it) {
         userObj.setWrtieBuffer(*it, kickMsg);
     }
 
+    // 2. check if the only member in the channel is operator
+    bool willAutoPromote = false;
+    if (info.operators.size() == 1 && info.operators.find(targetFd) != info.operators.end() && info.users.size() > 1) {
+        willAutoPromote = true; 
+    }
+
     chanObj.removeUserFromChannel(chanName, targetFd);
     userObj.getUserInfo(targetFd).channelList.erase(chanName);
+
+    if (willAutoPromote) {
+        if (chanObj.isExist(chanName)) {
+            struct channelInfo &updatedInfo = chanObj.getChannelInfo(chanName);
+            int newOpFd = *(updatedInfo.operators.begin()); 
+            
+            std::string newOpNick = userObj.getNickName(newOpFd);
+            std::string opMsg = ":server MODE " + chanName + " +o " + newOpNick + "\r\n";
+
+            for (std::set<int>::iterator it = updatedInfo.users.begin(); it != updatedInfo.users.end(); ++it) {
+                userObj.setWrtieBuffer(*it, opMsg);
+            }
+            std::cout << "[DEBUG] " << newOpNick << " auto-promoted to operator in " << chanName << std::endl;
+        }
+    }
 }

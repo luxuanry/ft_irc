@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 13:25:44 by suna              #+#    #+#             */
-/*   Updated: 2026/03/18 14:10:39 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/23 15:52:02 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,12 @@ void Channel::addChannel(std::string channelName)
     m_channelList[channelName] = info;
 }
 
+//lcao added
+void Channel::removeChannel(std::string channelName)
+{
+    
+    m_channelList.erase(channelName); 
+}
 
 bool Channel::isExist(std::string channelName)
 {

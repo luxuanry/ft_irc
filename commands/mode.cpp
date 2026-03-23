@@ -114,6 +114,7 @@ void modeCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
                             modeArgs += " " + targetUser;
                         } else {
                             std::string reply = ":server 401 " + execNick + " " + chanName + " " + "\r\n";
+                            userObj.setWrtieBuffer(fd, reply);
                         }
                         argIndex++;
                     }

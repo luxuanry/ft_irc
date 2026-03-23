@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/12 13:25:47 by suna              #+#    #+#             */
-/*   Updated: 2026/03/18 14:12:08 by suna             ###   ########.fr       */
+/*   Updated: 2026/03/23 15:51:25 by lcao             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Channel
         void initChannelInfo(channelInfo &info);
     public:
         void    addChannel(std::string channelName);
+        void    removeChannel(std::string channelName); //lcao added new function
         bool 			isExist(std::string channelName);
         channelInfo& getChannelInfo(std::string channelName);
         bool    isUserInChannel(std::string channelName, int fd);
