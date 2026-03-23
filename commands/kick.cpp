@@ -15,16 +15,14 @@ void kickCmd(Channel &chanObj, User &userObj, const std::vector<std::string> &cm
   
     std::string reason = (cmds.size() > 3) ? cmds[3] : "No reason specified";
 
-    std::string nick = userObj.getNickName(fd);
-
     if(!chanObj.isExist(chanName)){
-        std::string errMsg = ":server 403 " + nick + " " + chanName + " :No such channel\r\n";
+        std::string errMsg = ":server 403 " + execNick + " " + chanName + " :No such channel\r\n";
         userObj.setWrtieBuffer(fd, errMsg);
         return;
     }
     
     if(!chanObj.isUserInChannel(chanName, fd)){
-        std::string errMsg = ":server 442 " + nick + " " + chanName + " :You're not on that channel\r\n";
+        std::string errMsg = ":server 442 " + execNick + " " + chanName + " :You're not on that channel\r\n";
         userObj.setWrtieBuffer(fd, errMsg);
         return;
     }

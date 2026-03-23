@@ -11,20 +11,24 @@ void cleanupUserChannels(int fd, User &userManager, Channel &channelManager)
 {
     struct userInfo &info = userManager.getUserInfo(fd);
     std::string prefix = ":" + info.nickName + "!" + info.loginName + "@" + info.hostName;
+    std::string quitMsg = prefix + " QUIT :Connection closed\r\n";
+    std::set<int> notified;
 
-    // Send PART messages to all channels the user was in
+    // Send QUIT messages to all channels the user was in
     std::set<std::string>::iterator it;
     for (it = info.channelList.begin(); it != info.channelList.end(); ++it)
     {
         std::string channelName = *it;
         if (channelManager.isExist(channelName))
         {
-            std::string partMsg = prefix + " PART " + channelName + " :Connection closed\r\n";
             std::set<int> &channelUsers = channelManager.getUsers(channelName);
             for (std::set<int>::iterator uIt = channelUsers.begin(); uIt != channelUsers.end(); ++uIt)
             {
-                if (*uIt != fd)
-                    userManager.getUserInfo(*uIt).writeBuffer += partMsg;
+                if (*uIt != fd && notified.find(*uIt) == notified.end())
+                {
+                    userManager.getUserInfo(*uIt).writeBuffer += quitMsg;
+                    notified.insert(*uIt);
+                }
             }
         }
         channelManager.removeUserFromChannel(*it, fd);

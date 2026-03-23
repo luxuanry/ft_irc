@@ -12,18 +12,22 @@ void quit(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
     if (user.isLogin(fd))
     {
         std::string prefix = ":" + info.nickName + "!" + info.loginName + "@" + info.hostName;
+        std::string quitMsg = prefix + " QUIT :" + reason + "\r\n";
+        std::set<int> notified;
         std::set<std::string> channelsCopy = info.channelList;
         std::set<std::string>::iterator it;
         for (it = channelsCopy.begin(); it != channelsCopy.end(); ++it)
         {
             std::string channelName = *it;
-            std::string partMsg = prefix + " PART " + channelName + " :" + reason + "\r\n";
 
             std::set<int> &channelUsers = channels.getUsers(channelName);
             for (std::set<int>::iterator uIt = channelUsers.begin(); uIt != channelUsers.end(); ++uIt)
             {
-                if (*uIt != fd)
-                    user.getUserInfo(*uIt).writeBuffer += partMsg;
+                if (*uIt != fd && notified.find(*uIt) == notified.end())
+                {
+                    user.getUserInfo(*uIt).writeBuffer += quitMsg;
+                    notified.insert(*uIt);
+                }
             }
             channels.removeUserFromChannel(channelName, fd);
         }
