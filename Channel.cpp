@@ -73,6 +73,20 @@ void Channel::removeUserFromChannel(std::string channelName, int fd)
     {
         m_channelList[channelName].users.erase(fd);
         m_channelList[channelName].operators.erase(fd);
+
+        // If channel is now empty, delete it entirely
+        if (m_channelList[channelName].users.empty())
+        {
+            m_channelList.erase(channelName);
+            return;
+        }
+
+        // If no operators remain, promote the first user
+        if (m_channelList[channelName].operators.empty())
+        {
+            int firstUser = *(m_channelList[channelName].users.begin());
+            m_channelList[channelName].operators.insert(firstUser);
+        }
     }
 }
 

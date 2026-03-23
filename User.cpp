@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcao <lcao@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: suna <suna@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:53 by suna              #+#    #+#             */
-/*   Updated: 2026/03/18 15:17:41 by lcao             ###   ########.fr       */
+/*   Updated: 2026/03/21 15:10:07 by suna             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,16 +162,19 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             privmsg(*this, channel, cmds, fd);
         else if (cmds[0] == "NICK")
             nick(*this, cmds, fd);
-		    else if (cmds[0] == "PART")
-			      part(*this, channel, cmds, fd);
-		    else if (cmds[0] == "QUIT")
-			       quit(*this, channel, cmds, fd);
+		else if (cmds[0] == "PART")
+			part(*this, channel, cmds, fd);
+		else if (cmds[0] == "QUIT")
+			quit(*this, channel, cmds, fd);
         else if (cmds[0] == "TOPIC")
             topicCmd(channel, *this, cmds, fd);
         else if (cmds[0] == "KICK")
             kickCmd(channel, *this, cmds, fd);
         else if (cmds[0] == "MODE")
             modeCmd(channel, *this, cmds, fd);
+        else
+            m_User_int[fd].writeBuffer += ":server 421 " + m_User_int[fd].nickName + " :Unkown command\r\n";
+            
     }
     else
     {
@@ -181,9 +184,16 @@ void User::executeCommand(int fd, std::string cmd, std::string serverPass, Chann
             nick(*this, cmds, fd);
         else if (cmds[0] == "USER")
             userCmd(*this, cmds, fd);
+        else
+            m_User_int[fd].writeBuffer += ":server 421 " + m_User_int[fd].nickName + " :Unkown command\r\n";
         
         if (isLogin(fd)){
+            time_t now = time(0);
+            std::string date = ctime(&now);
             std::string welcome = ":server 001 " + m_User_int[fd].nickName + " :Welcome to the IRC server!\r\n";
+            welcome += ":server 002 " + m_User_int[fd].nickName + " :Your host is " + m_User_int[fd].hostName + ", running version 1.0\r\n";
+            welcome += ":server 003 " + m_User_int[fd].nickName + " :This server was created " + date;
+            welcome += ":server 004 " + m_User_int[fd].nickName + " " + ":ft_irc v:1.0\r\n";
             m_User_int[fd].writeBuffer += welcome;
             m_User_int[fd].status = 1; //change the status as connected
 

@@ -6,27 +6,23 @@ void quit(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
 {
     struct userInfo &info = user.getUserInfo(fd);
     
-    // 1. Capture the full reason (joining all words after QUIT)
-    std::string reason = "Client Quit";
-    if (cmd.size() > 1) {
-        reason = cmd[1];
-        for (size_t i = 2; i < cmd.size(); i++)
-            reason += " " + cmd[i];
-        if (!reason.empty() && reason[0] == ':') 
-            reason.erase(0, 1);
-    }
+    // 1. Get the reason
+    std::string reason = (cmd.size() > 1) ? cmd[1] : "Client Quit";
+    if (reason[0] == ':') reason.erase(0, 1);
 
-    // 2. If the user was logged in, notify all their channels
-    if (user.isLogin(fd)) {
+    // 2. Notify all channels this user was in
+    if (user.isLogin(fd))
+    {
         std::string quitNotice = ":" + info.nickName + "!" + info.loginName + "@" + info.hostName + " QUIT :" + reason + "\r\n";
-        
-        // We create a copy of the list to avoid iterator invalidation
-        std::set<std::string> channelsJoined = info.channelList; 
-        for (std::set<std::string>::iterator it = channelsJoined.begin(); it != channelsJoined.end(); ++it) {
-            std::set<int> &users = channels.getUsers(*it);
-            for (std::set<int>::iterator uIt = users.begin(); uIt != users.end(); ++uIt) {
-                if (*uIt != fd) // Don't send back to the quitting user
-                    user.setWrtieBuffer(*uIt, quitNotice);
+        std::set<std::string>::iterator it = info.channelList.begin();
+        for (; it != info.channelList.end(); ++it)
+        {
+            std::string channelName = *it; 
+            std::set<int> &channelUsers = channels.getUsers(channelName);
+            for (std::set<int>::iterator uIt = channelUsers.begin(); uIt != channelUsers.end(); ++uIt)
+            {
+                if (*uIt != fd) // Don't send it to the quitting user themselves
+                    user.getUserInfo(*uIt).writeBuffer += quitNotice;
             }
             channels.removeUserFromChannel(*it, fd);
         }
