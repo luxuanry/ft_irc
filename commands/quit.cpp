@@ -35,7 +35,7 @@ void quit(User &user, Channel &channels, std::vector<std::string> cmd, int fd)
     }
 
     // 3. Prepare the final ERROR message for the quitting client
-    std::string msg = "ERROR :Closing Link: " + info.hostName + " (" + reason + ")\r\n";
+    std::string msg = "Closing: " + info.hostName + " (" + reason + ")\r\n";
     info.writeBuffer += msg;
 
     // 4. Mark for deletion in the next POLL cycle
